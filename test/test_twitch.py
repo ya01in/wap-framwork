@@ -7,6 +7,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 
@@ -74,6 +75,11 @@ class TestView():
         except NoSuchElementException:
             logging.info('No consent button found')
 
+    def wait_for_content(self) -> None:
+        # Locate the video element and check if loaded
+        element = self.wait.until(EC.visibility_of_element_located((By.TAG_NAME, "video")))
+        self.wait.until(lambda _ : self.driver.execute_script("return !arguments[0].paused;", element))
+
     @pytest.mark.parametrize("y_scroll", [0, 300, 600, 900, 1200])
     @pytest.mark.nondestructive
     def test_testopen(self, y_scroll: int):
@@ -123,5 +129,4 @@ class TestView():
         picked_title.click()
 
         self.check_for_consent()
-
-        ## Locate the video element and check if loaded
+        self.wait_for_content()
