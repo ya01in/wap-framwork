@@ -1,8 +1,10 @@
 import logging
+import random
 import time
 
 import pytest
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -67,7 +69,43 @@ class TestView():
         self.scroll_page(pixel_y=y_scroll)
         self.scroll_page(pixel_y=y_scroll)
 
-        ## find Streamer and click
+        ## get current visible range
+        main = self.driver.find_element(By.TAG_NAME, "main")
+        front = self.driver.find_element(By.XPATH, '//*[@id="page-main-content-wrapper"]/div[1]')
+        button = front.find_element(By.TAG_NAME, 'button')
+        banner_trigger_height = button.size['height'] + button.location['y']
+        lower_bound = (y_scroll * 2)
+        if lower_bound > banner_trigger_height:
+            logging.info('Scrolled over subscribe button, trigger banner')
+        try:
+            banner = self.driver.find_element(By.XPATH, '//*[@id="twilight-sticky-header-root"]/div/div')
+            lower_bound += banner.size['height']
+        except NoSuchElementException:
+            logging.warning("No banner found")
+
+        bar = self.driver.find_element(By.XPATH, '//*[@id="root"]/div[2]')
+        upper_bound = lower_bound + main.size['height'] - bar.size['height']
+        visible_range = range(lower_bound, upper_bound)
+        ## filter visible streamer and click
+        titles = self.driver.find_elements(By.TAG_NAME, "h2")
+        logging.debug(f'Found titles elements:{len(titles)}')
+        logging.debug(f'Visible range:{lower_bound}, {upper_bound}')
+        for title in titles:
+            logging.debug(f"Position:{title.location}, Title: {title.text}")
+        visible_titles = [title for title in titles if title.is_displayed() and title.location['y'] in visible_range]
+        logging.info(f'Visible titles elements: {[v.text for v in visible_titles]}')
+        picked_title = random.choice(visible_titles)
+        logging.info(f'choosed title name:{picked_title.text}')
+        time.sleep(3)
+        self.driver.execute_script(f"window.scrollTo(0,{picked_title.location['y']})")
+        if picked_title.location['y'] > banner_trigger_height:
+            logging.info("Title position cause banner pop out, try to find banner")
+            try:
+                banner = self.driver.find_element(By.XPATH, '//*[@id="twilight-sticky-header-root"]/div/div')
+                self.driver.execute_script(f"window.scrollBy(0,{-banner.size['height'] * 2})")
+            except NoSuchElementException:
+                logging.warning("No banner found while trying to click the title")
+        picked_title.click()
 
         ## check if consent button shows up
 
