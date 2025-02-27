@@ -59,7 +59,7 @@ class TestView():
         self.driver.execute_script(f"window.scrollBy({pixel_x}, {pixel_y})")
         logging.debug(f"Scrolled page. x:{pixel_x}, y:{pixel_y}")
 
-    @pytest.mark.parametrize("y_scroll", [200])
+    @pytest.mark.parametrize("y_scroll", [0, 300, 600, 900, 1200])
     @pytest.mark.nondestructive
     def test_testopen(self, y_scroll: int):
         target_category = "StarCraft II"
