@@ -59,6 +59,21 @@ class TestView():
         self.driver.execute_script(f"window.scrollBy({pixel_x}, {pixel_y})")
         logging.debug(f"Scrolled page. x:{pixel_x}, y:{pixel_y}")
 
+    def check_for_consent(self, view_content: bool = True) -> None:
+        """Check if video is masked with consent warning, press consent button if desire.
+
+        Args:
+            view_content (bool, optional): control pressing consent button, True to press. Defaults to True.
+        """
+        try:
+            verify_button = self.driver.find_element(By.XPATH, '//*[@id="channel-player-gate"]/div/div/div[4]/div/button')
+            logging.info('Consent button found')
+            if view_content:
+                verify_button.click()
+                logging.info('Clicked button.')
+        except NoSuchElementException:
+            logging.info('No consent button found')
+
     @pytest.mark.parametrize("y_scroll", [0, 300, 600, 900, 1200])
     @pytest.mark.nondestructive
     def test_testopen(self, y_scroll: int):
@@ -107,6 +122,6 @@ class TestView():
                 logging.warning("No banner found while trying to click the title")
         picked_title.click()
 
-        ## check if consent button shows up
+        self.check_for_consent()
 
         ## Locate the video element and check if loaded
