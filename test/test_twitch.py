@@ -117,7 +117,7 @@ class TestView():
         logging.info(f'Visible titles elements: {[v.text for v in visible_titles]}')
         picked_title = random.choice(visible_titles)
         logging.info(f'choosed title name:{picked_title.text}')
-        time.sleep(3)
+        # time.sleep(3)
         self.driver.execute_script(f"window.scrollTo(0,{picked_title.location['y']})")
         if picked_title.location['y'] > banner_trigger_height:
             logging.info("Title position cause banner pop out, try to find banner")
