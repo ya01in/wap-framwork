@@ -130,3 +130,4 @@ class TestView():
 
         self.check_for_consent()
         self.wait_for_content()
+        assert self.driver.save_screenshot('./test_testopen.png'), "Failed to save screenshot"
