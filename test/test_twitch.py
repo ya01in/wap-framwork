@@ -12,21 +12,26 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 
 class TestView():
-    def setup_method(self):
+    @classmethod
+    def setup_class(cls):
         chrome_option = Options()
         chrome_option.add_argument('--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/114.0.5735.99 Mobile/15E148 Safari/604.1')
-        self.driver = webdriver.Chrome(chrome_option)
-        self.driver.implicitly_wait(1)
-        self.driver.get("https://www.twitch.tv/")
-        self.x = 390
-        self.y = 844
-        self.driver.set_window_size(self.x, self.y)
-        self.wait = WebDriverWait(self.driver, timeout=2, poll_frequency=1.0)
-        logging.debug("Finished setup_method")
+        cls.driver = webdriver.Chrome(chrome_option)
+        cls.driver.implicitly_wait(1)
+        cls.x = 390
+        cls.y = 844
+        cls.driver.set_window_size(cls.x, cls.y)
+        cls.wait = WebDriverWait(cls.driver, timeout=2, poll_frequency=1.0)
+        logging.debug("Finished setup_class")
 
-    def teardown_method(self):
-        self.driver.quit()
-        logging.debug("Finished teardown_method")
+    @classmethod
+    def teardown_class(cls):
+        cls.driver.quit()
+        logging.debug("Finished teardown_class")
+
+    def setup_method(self):
+        self.driver.get("https://www.twitch.tv/")
+        logging.debug("Finished setup.")
 
     def enter_search_page(self) -> None:
         """Find and click search button
