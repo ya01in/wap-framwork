@@ -19,15 +19,18 @@ class TestView():
         self.y = 844
         self.driver.set_window_size(self.x, self.y)
         self.wait = WebDriverWait(self.driver, timeout=2, poll_frequency=1.0)
+        logging.debug("Finished setup_method")
 
     def teardown_method(self):
         self.driver.quit()
+        logging.debug("Finished teardown_method")
 
     def enter_search_page(self) -> None:
         """Find and click search button
         """
         search_element = self.driver.find_element(By.CSS_SELECTOR, ".ScInteractableBase-sc-ofisyf-0:nth-child(2) .CoreText-sc-1txzju1-0")
         search_element.click()
+        logging.debug("Entered search page")
 
     def search_and_enter_category(self, category_name: str) -> None:
         """Find and input input bar
@@ -41,6 +44,7 @@ class TestView():
         cat_elements = self.driver.find_element(By.XPATH, '//*[@id="page-main-content-wrapper"]/div/ul/li[1]/a/div/p')
         assert cat_elements.text == category_name, "Failed to find correct category link"
         cat_elements.click()
+        logging.debug(f"Found and enter category:{category_name}")
 
     def scroll_page(self, pixel_x: int = 0, pixel_y: int = 0) -> None:
         """Scroll Page with script, as top-left cornor as (0,0)
@@ -51,6 +55,7 @@ class TestView():
         """
         time.sleep(0.5)
         self.driver.execute_script(f"window.scrollBy({pixel_x}, {pixel_y})")
+        logging.debug(f"Scrolled page. x:{pixel_x}, y:{pixel_y}")
 
     @pytest.mark.parametrize("y_scroll", [200])
     @pytest.mark.nondestructive
